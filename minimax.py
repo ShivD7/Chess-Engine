@@ -25,7 +25,7 @@ def getRandomMove(board, legalMoves):
 def findBestMove(board, legalMoves, whiteToPlay):
     global nextMove
     nextMove = None
-    findMoveNegaMax(board, legalMoves, DEPTH, 1 if whiteToPlay else -1)
+    findMoveNegaMaxAlphaBeta(board, legalMoves, DEPTH, -CHECKMATE, CHECKMATE, 1 if whiteToPlay else -1)
     return nextMove
     
 """
@@ -66,18 +66,43 @@ def findMoveMinMax(board, legalMoves, depth, whiteToPlay):
 def findMoveNegaMax(board, legalMoves, depth, multiplier):
     global nextMove
     if depth == 0:
-        return multiplier * scoreBoard(board)
+        return multiplier * scoreBoard(board, True if multiplier == 1 else False)
     
     maxScore = -CHECKMATE
+    random.shuffle(legalMoves)
     for move in legalMoves:
         board.push(move)
-        nextMoves = list(board.legal_moves())
+        nextMoves = list(board.legal_moves)
         score = -findMoveNegaMax(board, nextMoves, depth - 1, -multiplier)
         if score > maxScore:
             maxScore = score
             if depth == DEPTH:
                 nextMove = move
         board.pop()
+    return maxScore
+
+def findMoveNegaMaxAlphaBeta(board, legalMoves, depth, alpha, beta, multiplier):
+    global nextMove
+    if depth == 0:
+        return multiplier * scoreBoard(board, True if multiplier == 1 else False)
+    
+
+    maxScore = -CHECKMATE
+    random.shuffle(legalMoves)
+    for move in legalMoves:
+        board.push(move)
+        nextMoves = list(board.legal_moves)
+        score = -findMoveNegaMaxAlphaBeta(board, nextMoves, depth - 1, -beta, -alpha, -multiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        board.pop()
+        if maxScore > alpha: #pruning
+            alpha = maxScore
+        
+        if alpha >= beta:
+            break
     return maxScore
 
 def scoreBoard(board, whiteToPlay):
