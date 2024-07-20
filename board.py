@@ -1,6 +1,6 @@
 import chess
 import random
-from minimax import getRandomMove, findBestMoveMinMax
+from minimax import getRandomMove, findBestMove
 
 board = chess.Board()
 playing = True
@@ -26,7 +26,7 @@ while playing:
         move = chess.Move.from_uci(notation)
         board.push(move)
     else:
-        move = findBestMoveMinMax(board, legalMoves, whiteToPlay)
+        move = findBestMove(board, legalMoves, whiteToPlay)
         if move == None:
             getRandomMove(board, legalMoves)
         else:

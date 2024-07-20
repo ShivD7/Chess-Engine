@@ -22,12 +22,13 @@ def getRandomMove(board, legalMoves):
     board.push(legalMoves[rNum])
 
 
-def findBestMoveMinMax(board, legalMoves, whiteToPlay):
+def findBestMove(board, legalMoves, whiteToPlay):
     global nextMove
     nextMove = None
-    findMoveMinMax(board, legalMoves, DEPTH, whiteToPlay)
+    findMoveNegaMax(board, legalMoves, DEPTH, 1 if whiteToPlay else -1)
     return nextMove
-
+    
+"""
 def findMoveMinMax(board, legalMoves, depth, whiteToPlay):
     global nextMove
     if depth == 0:
@@ -60,7 +61,24 @@ def findMoveMinMax(board, legalMoves, depth, whiteToPlay):
                     nextMove = move
             board.pop()
         return minScore
+"""
+
+def findMoveNegaMax(board, legalMoves, depth, multiplier):
+    global nextMove
+    if depth == 0:
+        return multiplier * scoreBoard(board)
     
+    maxScore = -CHECKMATE
+    for move in legalMoves:
+        board.push(move)
+        nextMoves = list(board.legal_moves())
+        score = -findMoveNegaMax(board, nextMoves, depth - 1, -multiplier)
+        if score > maxScore:
+            maxScore = score
+            if depth == DEPTH:
+                nextMove = move
+        board.pop()
+    return maxScore
 
 def scoreBoard(board, whiteToPlay):
     if board.is_checkmate():
@@ -89,6 +107,7 @@ def scoreMaterial(board):
             score += scores[str(board.piece_at(i))]
     return score
 
+"""
 def findBestMove(board, legalMoves, whiteToPlay):
     turnMultiplier = 1 if whiteToPlay else -1
     opponentMinMaxScore = CHECKMATE
@@ -120,4 +139,4 @@ def findBestMove(board, legalMoves, whiteToPlay):
             bestPlayerMove = move
         board.pop()
     return bestPlayerMove
-
+"""
