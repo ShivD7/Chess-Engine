@@ -5,7 +5,7 @@ from minimax import getRandomMove, findBestMove
 board = chess.Board()
 playing = True
 
-player1 = True
+player1 = False
 player2 = False
 
 
@@ -19,6 +19,7 @@ while playing:
     humanTurn = (whiteToPlay and player1) or (not whiteToPlay and player2)
 
     if board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_fivefold_repetition() or board.is_seventyfive_moves():
+        print(board.is_checkmate(), board.is_stalemate(), board.is_insufficient_material(), board.is_fivefold_repetition(), board.is_seventyfive_moves())
         break
     if humanTurn:
         notation = input("What move would you like to play (please provide valid notation): ")
@@ -26,7 +27,6 @@ while playing:
         board.push(move)
     else:
         move = findBestMove(board, legalMoves, whiteToPlay)
-        print(move)
         if move == None:
             getRandomMove(board, legalMoves)
         else:

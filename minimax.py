@@ -18,7 +18,6 @@ STALEMATE = 0
 
 def getRandomMove(board, legalMoves):
     rNum = random.randrange(0, len(legalMoves))
-    print(rNum)
     board.push(legalMoves[rNum])
 
 
@@ -33,19 +32,27 @@ def scoreBoard(board):
 
 def findBestMove(board, legalMoves, whiteToPlay):
     turnMultiplier = 1 if whiteToPlay else -1
-    bestScore = -CHECKMATE
-    bestMove = None
+    opponentMinMaxScore = CHECKMATE
+    bestPlayerMove = None
+    random.shuffle(legalMoves)
     for move in legalMoves:
         board.push(move)
-        if board.is_checkmate():
-            currScore = CHECKMATE
-        elif board.is_stalemate():
-            currScore = STALEMATE
-        else:
-            currScore = turnMultiplier * scoreBoard(board)
-        if currScore > bestScore:
-            bestScore = currScore
-            bestMove = move
+        possibleOpponentMoves = list(board.legal_moves)
+        opponentMaxScore = -CHECKMATE
+        for possibleOpponentMove in possibleOpponentMoves:
+            board.push(possibleOpponentMove)
+            if board.is_checkmate():
+                currScore = -turnMultiplier * CHECKMATE
+            elif board.is_stalemate():
+                currScore = STALEMATE
+            else:
+                currScore = -turnMultiplier * scoreBoard(board)
+            if currScore > opponentMaxScore:
+                opponentMaxScore = currScore
+            board.pop()
+        if opponentMinMaxScore > opponentMaxScore:
+            opponentMinMaxScore = opponentMaxScore
+            bestPlayerMove = move
         board.pop()
-    return bestMove
+    return bestPlayerMove
 
